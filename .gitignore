@@ -1,6 +1,8 @@
 .idea
+out
 output
 input
 !input/.gitkeep
 target
 classes
+META-INF
