@@ -1,4 +1,5 @@
 .idea
 output
-input/*.txt
+input
+!input/.gitkeep
 target
