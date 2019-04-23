@@ -1,7 +1,6 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -27,6 +26,30 @@ public class WeatherMaxTemp {
              *
              * Each mapper will only parse one value (TMAX) from each line
              */
+            String[] elements = value.toString().replaceAll("\"", "").split(",");
+            String latlong;
+            FloatWritable tmax;
+
+            try {
+                latlong = elements[2] + "," + elements[3];
+            } catch (Exception e) {
+                System.out.println("Could not set elements 2 and 3 as latlong: " + e.getMessage());
+                e.printStackTrace();
+                latlong = "NA";
+            }
+
+            try {
+                tmax = new FloatWritable(Float.parseFloat(elements[36]));
+            } catch (Exception e) {
+                System.out.println("Could not set element 36 as TMAX: " + e.getMessage());
+                e.printStackTrace();
+                tmax = new FloatWritable(Float.MIN_VALUE);
+            }
+
+            // 36 index for tmax
+            // 2 and 3 index for lat/long
+            word.set(latlong);
+            context.write(word, tmax);
         }
     }
 
@@ -41,6 +64,12 @@ public class WeatherMaxTemp {
              * This will iterate across a list of values associated with a key
              * and assign the max as the result
              */
+            Float max = Float.MIN_VALUE;
+            for (FloatWritable value : values) {
+                max = Float.max(max, value.get());
+            }
+            result.set(max);
+            context.write(key, result);
         }
     }
 
