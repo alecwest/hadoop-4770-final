@@ -1,5 +1,6 @@
 import os
 import requests
+import tarfile
 
 location = 'https://www.ncei.noaa.gov/data/global-summary-of-the-day/archive/'
 years = [i for i in range(1929, 2020)]
@@ -16,7 +17,11 @@ for year in years:
         if response.status_code == 200:
             with open(file_path, 'wb') as f:
                 f.write(response.content)
+            print('extracting ' + file_path)
+            tf = tarfile.open(file_path)
+            tf.extractall(path=base_path)
+            tf.close()
+            os.remove(file_path)
         else:
             print('could not get url ' + url)
-                
-    
+
