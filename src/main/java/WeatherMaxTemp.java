@@ -10,6 +10,10 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WeatherMaxTemp {
     public static class WeatherMaxMapper
@@ -26,30 +30,46 @@ public class WeatherMaxTemp {
              *
              * Each mapper will only parse one value (TMAX) from each line
              */
-            String[] elements = value.toString().replaceAll("\"", "").split(",");
-            String latlong;
-            FloatWritable tmax;
+            List<String> elements = new ArrayList<String>();
+            String row = value.toString();
+            StringBuilder element = new StringBuilder();
+            boolean inQuotes = false; // Flag whether or not you're inside quotations
+            for (int i = 0; i < row.length(); i++) {
+                if (row.charAt(i) == '"') {
+                    inQuotes = !inQuotes;
+                    if (!inQuotes) {
+                        elements.add(element.toString().trim());
+                        element = new StringBuilder();
+                        i++; // skip the first comma that follows exit of quotes
+                    }
+                } else if (row.charAt(i) == ',' && !inQuotes) {
+                    elements.add(""); // This is a missing attribute in the row
+                } else {
+                    element.append(row.charAt(i)); // Continue reading current element
+                }
+            }
+
+            String date;
+            FloatWritable temp;
 
             try {
-                latlong = elements[2] + "," + elements[3];
+                date = elements.get(1).split("-")[0];
             } catch (Exception e) {
-                System.out.println("Could not set elements 2 and 3 as latlong: " + e.getMessage());
+                System.out.println("Could not set element 1 as date: " + e.getMessage());
                 e.printStackTrace();
-                latlong = "NA";
+                date = "NA";
             }
 
             try {
-                tmax = new FloatWritable(Float.parseFloat(elements[36]));
+                temp = new FloatWritable(Float.parseFloat(elements.get(6)));
             } catch (Exception e) {
-                System.out.println("Could not set element 36 as TMAX: " + e.getMessage());
+                System.out.println("Could not set element 6 as temp: " + e.getMessage());
                 e.printStackTrace();
-                tmax = new FloatWritable(Float.MIN_VALUE);
+                temp = new FloatWritable(Float.MIN_VALUE);
             }
 
-            // 36 index for tmax
-            // 2 and 3 index for lat/long
-            word.set(latlong);
-            context.write(word, tmax);
+            word.set(date);
+            context.write(word, temp);
         }
     }
 
