@@ -30,8 +30,33 @@ public class WeatherMaxTemp {
              *
              * Each mapper will only parse one value (TMAX) from each line
              */
+            List<String> elements = parseCsvRow(value.toString());
+
+            String date;
+            FloatWritable temp;
+
+            try {
+                date = elements.get(1).split("-")[0];
+            } catch (Exception e) {
+                System.out.println("Could not set element 1 as date: " + e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+
+            try {
+                temp = new FloatWritable(Float.parseFloat(elements.get(6)));
+            } catch (Exception e) {
+                System.out.println("Could not set element 6 as temp: " + e.getMessage());
+                e.printStackTrace();
+                return;
+            }
+
+            word.set(date);
+            context.write(word, temp);
+        }
+
+        private List<String> parseCsvRow(String row) {
             List<String> elements = new ArrayList<String>();
-            String row = value.toString();
             StringBuilder element = new StringBuilder();
             boolean inQuotes = false; // Flag whether or not you're inside quotations
             for (int i = 0; i < row.length(); i++) {
@@ -48,28 +73,7 @@ public class WeatherMaxTemp {
                     element.append(row.charAt(i)); // Continue reading current element
                 }
             }
-
-            String date;
-            FloatWritable temp;
-
-            try {
-                date = elements.get(1).split("-")[0];
-            } catch (Exception e) {
-                System.out.println("Could not set element 1 as date: " + e.getMessage());
-                e.printStackTrace();
-                date = "NA";
-            }
-
-            try {
-                temp = new FloatWritable(Float.parseFloat(elements.get(6)));
-            } catch (Exception e) {
-                System.out.println("Could not set element 6 as temp: " + e.getMessage());
-                e.printStackTrace();
-                temp = new FloatWritable(Float.MIN_VALUE);
-            }
-
-            word.set(date);
-            context.write(word, temp);
+            return elements;
         }
     }
 
