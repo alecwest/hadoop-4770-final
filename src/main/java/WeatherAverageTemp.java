@@ -62,7 +62,7 @@ public class WeatherAverageTemp {
                 throws IOException, InterruptedException {
             /**
              * This will iterate across a list of values associated with a key
-             * and assign the max as the result
+             * and assign the average as the result
              */
             Float sum = (float) 0;
             int numValues = 0;
