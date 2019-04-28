@@ -9,13 +9,9 @@ public class CsvRowParser {
         for (int i = 0; i < row.length(); i++) {
             if (row.charAt(i) == '"') {
                 inQuotes = !inQuotes;
-                if (!inQuotes) {
-                    elements.add(element.toString().trim());
-                    element = new StringBuilder();
-                    i++; // skip the first comma that follows exit of quotes
-                }
             } else if (row.charAt(i) == ',' && !inQuotes) {
-                elements.add(""); // This is a missing attribute in the row
+                elements.add(element.toString().trim()); // This is a missing attribute in the row
+                element = new StringBuilder();
             } else {
                 element.append(row.charAt(i)); // Continue reading current element
             }
