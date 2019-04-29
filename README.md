@@ -1,4 +1,4 @@
-# word-counter
+# hadoop-4770-final
 A MapReduce application that will be run in OpenStack
 
 ### Setup
