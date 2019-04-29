@@ -9,3 +9,5 @@ output
 target
 classes
 META-INF
+/bin/
+*.class
