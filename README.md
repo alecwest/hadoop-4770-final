@@ -1,5 +1,10 @@
 # hadoop-4770-final
-A MapReduce application that will be run in OpenStack
+A MapReduce application that will be run in OpenStack <br>
+There are a couple MapReduce applications that can be run:
+- WordCount
+- PiCount (theoretically also acts as a character count)
+- WeatherMaxTemp
+- WeatherAverageTemp (this is what we used for our final product)
 
 ### Setup
 Read from step 4.4 [here](https://bigdataproblog.wordpress.com/2016/05/20/developing-hadoop-mapreduce-application-within-intellij-idea-on-windows-10/)
